@@ -8,8 +8,8 @@ const emailTemplates = require("../utils/emailTemplate");
 async function regiterUser(req,res) {
  try {
         const { fullName, email, userName, mobile, password } = req.body;
+        
       
-
     if(!fullName || !email || !userName || !mobile || !password){
         return res.status(400).json({
             message: "all fields are required"
@@ -52,16 +52,17 @@ async function regiterUser(req,res) {
 }
 
 async function loginUser(req,res) {
-    const { email, userName, mobile, password } = req.body;
+   try {
+     const { identifier, password } = req.body;
 
-    if( (!email && !userName && !mobile) || !password ){
+    if( (!identifier) || !password ){
         return res.status(400).json({
              message: "Please provide email OR username OR mobile, and password"
         })
     }
 
     const user = await userModel.findOne({ 
-        $or: [ {email}, {userName}, {mobile} ]
+        $or: [ {email: identifier}, {userName: identifier}, {mobile: identifier} ]
     })
     if(!user){
         return res.status(404).json({
@@ -83,8 +84,14 @@ async function loginUser(req,res) {
 
     res.status(200).json({
         message: "user login successfully",
+        token,
         user,
     })
+   } catch (error) {
+     return res.status(500).json({
+        message: "internal server error"
+     })
+   }
 }
 
 
@@ -97,13 +104,14 @@ async function logoutUser(req, res) {
         })
     }
 
-    await redisClient.set(token, "blacklisted");
+    await redisClient.set(token, "blacklisted", "EX", 3600);
     res.clearCookie("token");
 
     return res.status(200).json({
         message: "logout successfully"
     })
    } catch (error) {
+    console.log(error,"error in logout")
       return res.status(500).json({
       message: "Internal server error",
       error: error,

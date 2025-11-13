@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     mobile: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },
@@ -38,10 +38,18 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
    }],
-    posts: [ {
+   posts: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "post"
-   }],
+        ref: "posts",
+      },
+    ],
+   reels: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
 }, { timestamps: true })
 
 module.exports = mongoose.model("user", userSchema);

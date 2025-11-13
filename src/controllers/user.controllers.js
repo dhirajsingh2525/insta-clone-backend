@@ -9,7 +9,7 @@ async function followUser(req,res) {
             message: "bad request"
         })
      }
-
+   console.log("follow route hit hua h")
      
    const loggedInUser = await userModel.findById( req.user._id )
    if(!loggedInUser.following.includes(user_id)){
@@ -123,10 +123,28 @@ async function unBlockedUser(req,res) {
   }
 }
 
+async function getAllUsers(req,res) {
+ try {
+    const currentUser = req.user._id;
+
+  const allusers = await userModel.find({_id: {$ne: currentUser}})
+
+  return res.status(200).json({
+    message: "fetch all users",
+    allusers: allusers
+  })
+ } catch (error) {
+  return res.status(500).json({
+    message: "internal server error"
+  })
+ }
+}
+
 
 module.exports = {
     followUser,
     unFollowUser,
     blockedUser,
-    unBlockedUser
+    unBlockedUser,
+    getAllUsers
 }

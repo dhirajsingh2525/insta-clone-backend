@@ -47,7 +47,14 @@ router.post("/update-password/:id", async (req,res) => {
 
 })
 
-
+router.get("/me", authMiddleware, async (req, res) => {
+   const user = await userModel.findById(req.user._id).populate("following", "_id fullName")
+   
+    return res.status(200).json({
+    message: "Current loggedin user",
+    user: user,
+  });
+});
 
 router.post("/user/register", userControllers.regiterUser);
 router.post("/user/login", userControllers.loginUser);

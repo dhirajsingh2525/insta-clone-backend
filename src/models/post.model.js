@@ -1,5 +1,3 @@
-
-
 const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema(
@@ -22,7 +20,11 @@ const postSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user'
     }],
-    tags: [{ type: String }]      
+    comments: [{ 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment"
+     }],  
+    tags: [{ type: String }],
   },
   { timestamps: true }
 );

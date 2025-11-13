@@ -12,12 +12,15 @@ const upload = multer({
 
 
 router.post("/create-post",
-     upload.array("image", 2),
+    authMiddleware,
+     upload.array("image", 5),
     postController.createPost)
 
 router.get("/all-post", postController.getAllPost)
-router.get("/user-post", postController.getUserPost)
-router.put("/update-post/:id",postController.updatePost);
-router.delete("/delete-post/:id",postController.updatePost);
+router.get("/user-post", authMiddleware, postController.getUserPost)
+router.put("/update-post/:_id",postController.updatePost);
+router.delete("/delete-post/:_id", authMiddleware, postController.deletePost);
+router.get("/posts/like/:post_id", authMiddleware, postController.likePostByUser )
+router.get('/posts/unliked/:post_id', authMiddleware, postController.unLikendPost)
 
 module.exports = router;

@@ -6,7 +6,7 @@ const postModel = require("../models/post.model");
 async function createPost(req,res) {
     try {
        const {  caption, location,tags } = req.body;
-       console.log(req.body,req.files)
+      
 
     if(!req.files){
         return res.status(404).json({
@@ -20,7 +20,7 @@ async function createPost(req,res) {
     }))
 
     const uploadedPost = await PostModel.create({
-            user_id: req.user_id,
+            user_id: req.user._id,
             imageUrl: files.map(file => file.url),
             caption,
             location,
@@ -28,11 +28,10 @@ async function createPost(req,res) {
     })
 
    const user = await userModel.findById(req.user._id);
-    user.posts.push(newPost._id);
+    user.posts.push(uploadedPost._id);
     await user.save();
 
-
-    res.json({ message: "Post created", post: uploadedPost }); 
+    return res.json({ message: "Post created", post: uploadedPost }); 
     } catch (error) {
        console.log(error,"error in controller") 
     }
@@ -41,6 +40,7 @@ async function createPost(req,res) {
 async function getAllPost(req,res) {
   try {
       const allPosts = await PostModel.find({})
+                      .populate("user_id", "fullName") 
                       .sort({ createdAt: -1 })
      
     if (!allPosts)
@@ -113,7 +113,7 @@ async function updatePost(req,res) {
 
    return res.status(200).json({
     message: "post update successfully",
-    updatePost
+    updatedPost
    })
 
   } catch (error) {
@@ -143,6 +143,13 @@ try {
 
   await postModel.findByIdAndDelete(post_id)
 
+  
+   await userModel.findByIdAndUpdate(
+  post.user_id,
+  { $pull: { posts: post_id } }
+);
+
+
   return res.status(200).json({
     message: "post deleted successfully"
   })
@@ -154,11 +161,86 @@ try {
 }
 }
 
+async function likePostByUser(req,res) {
+try {
+    const post_id = req.params.post_id;
+  const user_id = req.user._id
+
+  if(!post_id){
+     return res.status(404).json({
+      message: "postId not found"
+     })
+  }
+
+  const currentPost = await postModel.findById(post_id);
+
+  if(!currentPost){
+     return res.status(404).json({
+      messgae: 'post not found'
+     })
+  }
+
+  if(currentPost.likes.includes(user_id)){
+    return res.status(400).json({
+      message: "post already liked"
+    })
+  }
+
+  currentPost.likes.push(user_id)
+  currentPost.save();
+
+ return res.status(200).json({
+  messasge: "post liked",
+   likes: currentPost.likes
+ })
+
+} catch (error) {
+  return res.status(500).json({
+    message: "internal server error"
+  })
+}
+
+}
+
+async function unLikendPost(req,res) {
+try {
+    const post_id = req.params.post_id;
+  const user_id = req.user._id
+
+  if(!post_id){
+    return res.status(404).json({
+      message: "postId not found"
+    })
+  }
+
+  const post = await postModel.findByIdAndUpdate(post_id, {
+    $pull: { likes: user_id }},
+      { new: true } 
+  )
+
+  return res.status(200).json({
+    message: "post unliked",
+     likes: post.likes
+  })
+} catch (error) {
+  return res.status(500).json({
+    message: "internal server error"
+  })
+}
+
+ 
+
+  
+}
+
+
 module.exports = {
     createPost,
     getAllPost,
     getUserPost,
     updatePost,
-    deletePost
+    deletePost,
+    likePostByUser,
+    unLikendPost
 }
 

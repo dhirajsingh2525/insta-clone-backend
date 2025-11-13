@@ -24,6 +24,7 @@ const authMiddleware = async (req,res,next) => {
        }
 
        const decoded =  jwt.verify( token, process.env.JWT_SECRET )
+
        
        if(!decoded){
         return res.status(401).json({
@@ -36,6 +37,7 @@ const authMiddleware = async (req,res,next) => {
        req.user = user;
        next();
     } catch (error) {
+        console.log(error,"error in jwt")
       return res.status(500).json({
       message: "Internal server error",
       error: error,
