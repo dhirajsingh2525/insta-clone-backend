@@ -37,7 +37,7 @@ async function getAllReels(req, res) {
 
     const reels = await reelModel
       .find({})
-      .populate("user_id", "fullName avatar")
+      .populate("user_id", "fullName profilePic")
       .sort({ createdAt: -1 });
 
     if (!reels || reels.length === 0) {
@@ -94,27 +94,6 @@ async function getUserReel(req,res) {
     }
 }
 
-async function getReelById(req, res) {
-  try {
-    const { reelId } = req.params;
-
-    const reel = await reelModel
-      .findById(reelId)
-      .populate("user_id", "fullName userName")
-
-    if (!reel) {
-      return res.status(404).json({ message: "Reel not found" });
-    }
-
-    res.status(200).json({
-      success: true,
-      reel,
-    });
-  } catch (err) {
-    console.log(err)
-    res.status(500).json({ message: "Error fetching reel" });
-  }
-}
 
 async function likeOrUnlikeReel(req, res) {
   try {
@@ -159,6 +138,5 @@ module.exports = {
     uploadReels,
     getAllReels,
     getUserReel,
-    getReelById,
     likeOrUnlikeReel
 }

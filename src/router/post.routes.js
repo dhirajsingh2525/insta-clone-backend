@@ -17,9 +17,9 @@ router.post("/create-post",
     postController.createPost)
 
 router.get("/all-post", postController.getAllPost)
-router.get("/user-post", authMiddleware, postController.getUserPost)
-router.put("/update-post/:_id",postController.updatePost);
-router.delete("/delete-post/:_id", authMiddleware, postController.deletePost);
+router.get("/user-post", postController.getUserPost)
+router.put("/update-post/:post_id",postController.updatePost);
+router.delete("/delete-post/:post_id", authMiddleware, postController.deletePost);
 router.get("/posts/like/:post_id", authMiddleware, postController.likePostByUser )
 router.get('/posts/unliked/:post_id', authMiddleware, postController.unLikendPost)
 

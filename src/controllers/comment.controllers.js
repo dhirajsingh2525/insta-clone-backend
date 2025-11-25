@@ -1,9 +1,8 @@
 const postModel = require("../models/post.model");
 const commentModel = require("../models/comment.model");
 
-
 async function addComment(req, res) {
-     try {
+  try {
     const { postId } = req.params;
     const { text } = req.body;
     const userId = req.user._id;
@@ -11,23 +10,30 @@ async function addComment(req, res) {
     const post = await postModel.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    const comment = await commentModel.create({ 
-        post: postId,
-        user: userId,
-        text
-         });
+    const comment = await commentModel.create({
+      post: postId,
+      user: userId,
+      text
+    });
+
+    await postModel.findByIdAndUpdate(
+      postId,
+      { $push: { comments: comment._id } }
+    );
 
     await comment.populate("user", "fullName");
 
-    res.status(200).json({ 
-        message: "Comment added",
-         comment
-         });
+    return res.status(200).json({
+      message: "Comment added",
+      comment
+    });
+
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Something went wrong" });
+    return res.status(500).json({ message: "Something went wrong" });
   }
 }
+
 
 async function getAllComments(req,res) {
       try {

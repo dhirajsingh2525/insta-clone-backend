@@ -7,10 +7,6 @@ const reelSchema = new mongoose.Schema(
     type: String,
     required: true
   },
-  reel: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user"
-  },
   comment: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Comment"

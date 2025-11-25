@@ -24,7 +24,21 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-      blockedUsers: [
+    profilePic: {
+        type: String,
+        default: ""
+    },
+     bio: {
+        type: String,
+        default: ""
+    },
+
+    gender: {
+        type: String,
+        enum: ["Male", "Female", "Prefer not to say"],
+        default: "Prefer not to say"
+    },
+    blockedUsers: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
@@ -47,7 +61,7 @@ const userSchema = new mongoose.Schema({
    reels: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        ref: "reel",
       },
     ],
 }, { timestamps: true })

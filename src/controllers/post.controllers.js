@@ -40,7 +40,8 @@ async function createPost(req,res) {
 async function getAllPost(req,res) {
   try {
       const allPosts = await PostModel.find({})
-                      .populate("user_id", "fullName") 
+                      .populate("user_id", "fullName profilePic") 
+                      .populate("comments")
                       .sort({ createdAt: -1 })
      
     if (!allPosts)

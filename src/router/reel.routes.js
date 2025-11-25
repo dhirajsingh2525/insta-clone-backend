@@ -13,7 +13,6 @@ const upload = multer({
 router.post("/create-reel", authMiddleware, upload.single("video"),  reelController.uploadReels)
 router.get("/get-allreels", authMiddleware, reelController.getAllReels);
 router.get("/get-userreel", authMiddleware, reelController.getUserReel)
-router.get("/reel/:reelId", authMiddleware, reelController.getReelById)
 router.post("/reels/like/:reelId", authMiddleware, reelController.likeOrUnlikeReel);
 
 
